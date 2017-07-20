@@ -43,7 +43,7 @@ The proxy preferences dialog:<br>
 ### Building the Network plugin
 -------------------------------
 
-1. Clone this repository locally - http://jbesson@stash.hcom/scm/~jbesson/network-plugin.git
+1. Clone this repository locally
 2. Open this folder in Idea IntelliJ CE (Download and install the community edition if you do not already have it)
 3. In IntelliJ -> Right click on network-plugin.iml - > Import 'network-plugin' Module. The icon next to the root "network-plugin" folder on the project explorer should now be the plugin icon.
 4. Project Structure -> Set the Project SDK to IntelliJ IDEA Community Edition
