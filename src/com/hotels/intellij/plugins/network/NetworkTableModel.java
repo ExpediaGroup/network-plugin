@@ -18,19 +18,19 @@ package com.hotels.intellij.plugins.network;
 import com.google.common.collect.Lists;
 import com.hotels.intellij.plugins.network.domain.RequestResponse;
 
-import javax.swing.table.AbstractTableModel;
 import java.util.List;
+import javax.swing.table.AbstractTableModel;
 
 /**
  * Table model to populate the request table.
  */
 public class NetworkTableModel extends AbstractTableModel {
 
-    public static final int URL_INDEX = 0;
-    public static final int RESPONSE_CODE_INDEX = 1;
-    public static final int RESPONSE_CONTENT_TYPE_INDEX = 2;
-    public static final int RESPONSE_TIME_INDEX = 3;
-    public static final int METHOD_INDEX = 4;
+    private static final int URL_INDEX = 0;
+    private static final int RESPONSE_CODE_INDEX = 1;
+    private static final int RESPONSE_CONTENT_TYPE_INDEX = 2;
+    private static final int RESPONSE_TIME_INDEX = 3;
+    private static final int METHOD_INDEX = 4;
 
     // Column headings.
     private static final List<String> COLUMN_NAMES = Lists.newArrayList("Name", "Status", "Type", "Time (ms)", "Method");
@@ -77,7 +77,7 @@ public class NetworkTableModel extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return true;
+        return false;
     }
 
     @Override

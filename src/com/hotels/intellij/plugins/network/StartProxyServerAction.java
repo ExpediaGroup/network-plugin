@@ -15,6 +15,15 @@
  */
 package com.hotels.intellij.plugins.network;
 
+import static com.hotels.intellij.plugins.network.Preferences.ADDITIONAL_REQ_PARAMS_DEFAULT;
+import static com.hotels.intellij.plugins.network.Preferences.ADDITIONAL_REQ_PARAMS_KEY;
+import static com.hotels.intellij.plugins.network.Preferences.HTTP_PORT_DEFAULT;
+import static com.hotels.intellij.plugins.network.Preferences.HTTP_PORT_KEY;
+import static com.hotels.intellij.plugins.network.Preferences.REDIRECTED_HOST_TEMPLATE_DEFAULT;
+import static com.hotels.intellij.plugins.network.Preferences.REDIRECTED_HOST_TEMPLATE_KEY;
+import static com.hotels.intellij.plugins.network.Preferences.REDIRECT_TO_HOST_KEY;
+import static com.hotels.intellij.plugins.network.Preferences.REDIRECT_TO_PORT_KEY;
+
 import com.hotels.intellij.plugins.network.converter.DefaultByteBufToStringConverter;
 import com.hotels.intellij.plugins.network.converter.FullHttpResponseToResponseContentConverter;
 import com.hotels.intellij.plugins.network.converter.HeaderToTextConverter;
@@ -29,6 +38,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.util.IconLoader;
 import org.littleshoot.proxy.HttpProxyServer;
 import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
+
+import java.net.InetSocketAddress;
+import javax.annotation.Nullable;
 
 /**
  * Button to start the proxy server.
@@ -46,14 +58,29 @@ public class StartProxyServerAction extends AnAction {
     @Override
     public void actionPerformed(AnActionEvent event) {
         int httpPort = getProxyPort();
+        String redirectedHostTemplate = getRedirectedHostTemplate();
+        String additionalReqParams = getAdditionalReqParams();
+
+        String redirectToHost = getRedirectToHost();
+        String redirectToPortString = getRedirectToPort();
+
+        @Nullable InetSocketAddress redirectTo = null;
+        if (redirectToHost != null && redirectToPortString != null) {
+            redirectTo = new InetSocketAddress(redirectToHost, Integer.parseInt(redirectToPortString));
+        }
+
         notifyProxyStartup(httpPort);
 
         ProxyServerComponent proxyServerComponent = event.getProject().getComponent(ProxyServerComponent.class);
         HttpProxyServer httpProxyServer = DefaultHttpProxyServer.bootstrap()
-                .withPort(httpPort)
-                .withFiltersSource(getProxyHttpFiltersSourceAdapter())
-                .withMaxInitialLineLength(32768)
-                .start();
+            .withAllowLocalOnly(false)
+            .withPort(httpPort)
+            .withServerResolver(new CustomServerResolver(redirectedHostTemplate, redirectTo))
+            .withFiltersSource(getProxyHttpFiltersSourceAdapter(redirectedHostTemplate,
+                                                                additionalReqParams,
+                                                                redirectTo))
+            .withMaxInitialLineLength(32768)
+            .start();
 
         proxyServerComponent.setServer(httpProxyServer);
     }
@@ -66,7 +93,27 @@ public class StartProxyServerAction extends AnAction {
 
     private int getProxyPort() {
         PropertiesComponent propertiesComponent = PropertiesComponent.getInstance();
-        return propertiesComponent.getInt(Preferences.HTTP_PORT_KEY, Preferences.HTTP_PORT_DEFAULT);
+        return propertiesComponent.getInt(HTTP_PORT_KEY, HTTP_PORT_DEFAULT);
+    }
+
+    private @Nullable String getRedirectToHost() {
+        PropertiesComponent propertiesComponent = PropertiesComponent.getInstance();
+        return propertiesComponent.getValue(REDIRECT_TO_HOST_KEY);
+    }
+
+    private @Nullable String getRedirectToPort() {
+        PropertiesComponent propertiesComponent = PropertiesComponent.getInstance();
+        return propertiesComponent.getValue(REDIRECT_TO_PORT_KEY);
+    }
+
+    private String getRedirectedHostTemplate() {
+        PropertiesComponent propertiesComponent = PropertiesComponent.getInstance();
+        return propertiesComponent.getValue(REDIRECTED_HOST_TEMPLATE_KEY, REDIRECTED_HOST_TEMPLATE_DEFAULT);
+    }
+
+    private String getAdditionalReqParams() {
+        PropertiesComponent propertiesComponent = PropertiesComponent.getInstance();
+        return propertiesComponent.getValue(ADDITIONAL_REQ_PARAMS_KEY, ADDITIONAL_REQ_PARAMS_DEFAULT);
     }
 
     private void notifyProxyStartup(int httpPort) {
@@ -76,7 +123,9 @@ public class StartProxyServerAction extends AnAction {
                 NotificationType.INFORMATION));
     }
 
-    private ProxyHttpFiltersSourceAdapter getProxyHttpFiltersSourceAdapter() {
+    private ProxyHttpFiltersSourceAdapter getProxyHttpFiltersSourceAdapter(String redirectedHostTemplate,
+                                                                           String additionalReqParams,
+                                                                           @Nullable InetSocketAddress redirectTo) {
         DefaultByteBufToStringConverter defaultByteBufToStringConverter = new DefaultByteBufToStringConverter();
         LZ4ByteBufToStringConverter lz4ByteBufToStringConverter = new LZ4ByteBufToStringConverter();
         HeaderToTextConverter headerToTextConverter = new HeaderToTextConverter();
@@ -85,6 +134,6 @@ public class StartProxyServerAction extends AnAction {
         NettyObjectsToRequestResponseConverter nettyObjectsToRequestResponseConverter = new NettyObjectsToRequestResponseConverter(defaultByteBufToStringConverter, fullHttpResponseToResponseContentConverter, headerToTextConverter, requestToCurlConverter);
 
         NetworkListener networkListener = new NetworkListener(tableModel, nettyObjectsToRequestResponseConverter);
-        return new ProxyHttpFiltersSourceAdapter(networkListener);
+        return new ProxyHttpFiltersSourceAdapter(networkListener, redirectedHostTemplate, additionalReqParams, redirectTo);
     }
 }

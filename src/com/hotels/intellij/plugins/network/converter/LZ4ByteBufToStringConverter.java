@@ -15,6 +15,8 @@
  */
 package com.hotels.intellij.plugins.network.converter;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import com.intellij.openapi.diagnostic.Logger;
 import io.netty.buffer.ByteBuf;
 import net.jpountz.lz4.LZ4BlockInputStream;
@@ -23,7 +25,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 
 /**
  * Convert the {@link ByteBuf} containing the response compressed in LZ4 into a {@link String}.
@@ -44,29 +45,21 @@ public class LZ4ByteBufToStringConverter {
         content.readBytes(contentBytes);
         content.readerIndex(0);
 
-        return new String(decompress(contentBytes), Charset.forName("UTF-8"));
+        return new String(decompress(contentBytes), UTF_8);
     }
 
     private byte[] decompress(byte[] input) {
-        byte[] result = null;
-        if (input != null) {
-            InputStream inputStream = new LZ4BlockInputStream(new ByteArrayInputStream(input));
-
-            byte[] buffer = new byte[64000];
-            ByteArrayOutputStream uncompressedStream = new ByteArrayOutputStream();
-            int bytesRead = -1;
-            try {
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    uncompressedStream.write(buffer, 0, bytesRead);
-                }
-            } catch (IOException e) {
-                LOGGER.error("Failed to decompress lz4-block", e);
+        byte[] buffer = new byte[64000];
+        try (InputStream inputStream = new LZ4BlockInputStream(new ByteArrayInputStream(input));
+             ByteArrayOutputStream uncompressedStream = new ByteArrayOutputStream()) {
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                uncompressedStream.write(buffer, 0, bytesRead);
             }
-
-            result = uncompressedStream.toByteArray();
+            return uncompressedStream.toByteArray();
+        } catch (IOException e) {
+            LOGGER.error("Failed to decompress lz4-block", e);
         }
-
-        return result;
+        return new byte[0];
     }
-
 }

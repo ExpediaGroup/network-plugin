@@ -15,8 +15,6 @@
  */
 package com.hotels.intellij.plugins.network.domain;
 
-import java.util.Map;
-
 /**
  * Domain object to hold the request and response data for displaying.
  */
@@ -33,7 +31,6 @@ public class RequestResponse {
     private String curlRequest;
 
     private RequestResponse() {
-        // Intentionally empty. Create via Builder.
     }
 
     public String getUrl() {
@@ -80,7 +77,7 @@ public class RequestResponse {
      * RequestResponse.Builder.
      */
     public static final class Builder {
-        private RequestResponse requestResponse = new RequestResponse();
+        private final RequestResponse requestResponse;
 
         public Builder() {
             this.requestResponse = new RequestResponse();

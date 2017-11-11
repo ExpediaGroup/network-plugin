@@ -15,8 +15,9 @@
  */
 package com.hotels.intellij.plugins.network.converter;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import io.netty.buffer.ByteBuf;
-import io.netty.util.CharsetUtil;
 
 /**
  * Default {@link ByteBuf} to {@link String} converter.
@@ -30,7 +31,7 @@ public class DefaultByteBufToStringConverter {
      * @return {@link String}
      */
     public String convert(ByteBuf content) {
-        return content.toString(CharsetUtil.UTF_8);
+        return content.toString(UTF_8);
     }
 
 }

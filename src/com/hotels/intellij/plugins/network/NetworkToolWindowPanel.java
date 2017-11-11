@@ -19,15 +19,19 @@ import com.hotels.intellij.plugins.network.domain.RequestResponse;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
+import com.intellij.openapi.ui.StripeTable;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTabbedPane;
 import com.intellij.ui.table.JBTable;
 
+import java.awt.*;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.*;
 
 /**
  * The Network tool window panel. Extension of {@link SimpleToolWindowPanel}.
@@ -37,11 +41,11 @@ public class NetworkToolWindowPanel extends SimpleToolWindowPanel {
     public static final String NETWORK_TOOLBAR = "NetworkToolbar";
 
     private NetworkTableModel tableModel = new NetworkTableModel();
-    private JTextArea requestHeaderTextArea;
-    private JTextArea requestContentTextArea;
-    private JTextArea responseHeaderTextArea;
-    private JTextArea responseContentTextArea;
-    private JTextArea curlTextArea;
+    private Document requestHeaderTextAreaDocument;
+    private Document requestContentTextAreaDocument;
+    private Document responseHeaderTextAreaDocument;
+    private Document responseContentTextAreaDocument;
+    private Document curlTextAreaDocument;
 
     /**
      * Constructor. Used to build the necessary components.
@@ -78,7 +82,7 @@ public class NetworkToolWindowPanel extends SimpleToolWindowPanel {
     }
 
     private Component createTableComponent() {
-        JBTable table = new JBTable(tableModel);
+        JBTable table = new StripeTable(tableModel);
 
         DefaultTableCellRenderer rightAlignedTableCellRenderer = new DefaultTableCellRenderer();
         rightAlignedTableCellRenderer.setHorizontalAlignment(JLabel.CENTER);
@@ -89,31 +93,22 @@ public class NetworkToolWindowPanel extends SimpleToolWindowPanel {
 
         table.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
             if (table.getSelectedRow() >= 0) {
-                ApplicationManager.getApplication().invokeLater(() -> {
+                ApplicationManager.getApplication().runWriteAction(() -> {
                     RequestResponse requestResponse = tableModel.getRow(table.getSelectedRow());
 
-                    requestHeaderTextArea.setText((requestResponse.getRequestHeaders()));
-                    requestHeaderTextArea.setCaretPosition(0);
-
-                    requestContentTextArea.setText(requestResponse.getRequestContent());
-                    requestContentTextArea.setCaretPosition(0);
-
-                    responseHeaderTextArea.setText(requestResponse.getResponseHeaders());
-                    responseHeaderTextArea.setCaretPosition(0);
-
-                    responseContentTextArea.setText(requestResponse.getResponseContent());
-                    responseContentTextArea.setCaretPosition(0);
-
-                    curlTextArea.setText(requestResponse.getCurlRequest());
-                    curlTextArea.setCaretPosition(0);
+                    requestHeaderTextAreaDocument.setText(replaceIncorrectLineSepators(requestResponse.getRequestHeaders()));
+                    requestContentTextAreaDocument.setText(replaceIncorrectLineSepators(requestResponse.getRequestContent()));
+                    responseHeaderTextAreaDocument.setText(replaceIncorrectLineSepators(requestResponse.getResponseHeaders()));
+                    responseContentTextAreaDocument.setText(replaceIncorrectLineSepators(requestResponse.getResponseContent()));
+                    curlTextAreaDocument.setText(requestResponse.getCurlRequest());
                 });
             } else {
-                ApplicationManager.getApplication().invokeLater(() -> {
-                    requestHeaderTextArea.setText("");
-                    requestContentTextArea.setText("");
-                    responseHeaderTextArea.setText("");
-                    responseContentTextArea.setText("");
-                    curlTextArea.setText("");
+                ApplicationManager.getApplication().runWriteAction(() -> {
+                    requestHeaderTextAreaDocument.setText("");
+                    requestContentTextAreaDocument.setText("");
+                    responseHeaderTextAreaDocument.setText("");
+                    responseContentTextAreaDocument.setText("");
+                    curlTextAreaDocument.setText("");
                 });
             }
         });
@@ -121,49 +116,60 @@ public class NetworkToolWindowPanel extends SimpleToolWindowPanel {
         return new JBScrollPane(table);
     }
 
+    private CharSequence replaceIncorrectLineSepators(String text) {
+        return text.replaceAll("\\s", "\n");
+    }
+
     private Component createTabbedComponent() {
         JBTabbedPane tabbedPane = new JBTabbedPane(SwingConstants.TOP);
-        tabbedPane.insertTab("Request Headers", null, createRequestHeaderComponent(), "", 0);
-        tabbedPane.insertTab("Request Content", null, createRequestContentComponent(), "", 1);
-        tabbedPane.insertTab("Response Headers", null, createResponseHeaderComponent(), "", 2);
-        tabbedPane.insertTab("Response Content", null, createResponseContentComponent(), "", 3);
-        tabbedPane.insertTab("Curl Request", null, createCurlRequestComponent(), "", 4);
+        EditorFactory editorFactory = EditorFactory.getInstance();
+
+        tabbedPane.insertTab("Request Headers", null, createRequestHeaderComponent(editorFactory), "", 0);
+        tabbedPane.insertTab("Request Content", null, createRequestContentComponent(editorFactory), "", 1);
+        tabbedPane.insertTab("Response Headers", null, createResponseHeaderComponent(editorFactory), "", 2);
+        tabbedPane.insertTab("Response Content", null, createResponseContentComponent(editorFactory), "", 3);
+        tabbedPane.insertTab("Curl Request", null, createCurlRequestComponent(editorFactory), "", 4);
 
         return tabbedPane;
     }
 
-    private Component createRequestHeaderComponent() {
-        requestHeaderTextArea = new JTextArea();
-        requestHeaderTextArea.setEditable(false);
+    private Component createRequestHeaderComponent(EditorFactory editorFactory) {
+        requestHeaderTextAreaDocument = editorFactory.createDocument("");
 
-        return new JBScrollPane(requestHeaderTextArea);
+        Editor requestHeaderTextAreaEditor = editorFactory.createViewer(requestHeaderTextAreaDocument);
+
+        return requestHeaderTextAreaEditor.getComponent();
     }
 
-    private Component createRequestContentComponent() {
-        requestContentTextArea = new JTextArea();
-        requestContentTextArea.setEditable(false);
+    private Component createRequestContentComponent(EditorFactory editorFactory) {
+        requestContentTextAreaDocument = editorFactory.createDocument("");
 
-        return new JBScrollPane(requestContentTextArea);
+        Editor requestContentTextAreaEditor = editorFactory.createViewer(requestContentTextAreaDocument);
+
+        return requestContentTextAreaEditor.getComponent();
     }
 
-    private Component createResponseHeaderComponent() {
-        responseHeaderTextArea = new JTextArea();
-        responseHeaderTextArea.setEditable(false);
+    private Component createResponseHeaderComponent(EditorFactory editorFactory) {
+        responseHeaderTextAreaDocument = editorFactory.createDocument("");
 
-        return new JBScrollPane(responseHeaderTextArea);
+        Editor responseHeaderTextAreaEditor = editorFactory.createViewer(responseHeaderTextAreaDocument);
+
+        return responseHeaderTextAreaEditor.getComponent();
     }
 
-    private Component createResponseContentComponent() {
-        responseContentTextArea = new JTextArea();
-        responseContentTextArea.setEditable(false);
+    private Component createResponseContentComponent(EditorFactory editorFactory) {
+        responseContentTextAreaDocument = editorFactory.createDocument("");
 
-        return new JBScrollPane(responseContentTextArea);
+        Editor responseContentEditor = editorFactory.createViewer(responseContentTextAreaDocument);
+
+        return responseContentEditor.getComponent();
     }
 
-    private Component createCurlRequestComponent() {
-        curlTextArea = new JTextArea();
-        curlTextArea.setEditable(false);
+    private Component createCurlRequestComponent(EditorFactory editorFactory) {
+        curlTextAreaDocument = editorFactory.createDocument("");
 
-        return new JBScrollPane(curlTextArea);
+        Editor curlTextAreaEditor = editorFactory.createViewer(curlTextAreaDocument);
+
+        return curlTextAreaEditor.getComponent();
     }
 }

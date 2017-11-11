@@ -17,12 +17,17 @@ package com.hotels.intellij.plugins.network;
 
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponse;
 import org.littleshoot.proxy.HttpFiltersAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Littleproxy filters adapter.
  */
 public class ProxyHttpFiltersAdapter extends HttpFiltersAdapter {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final NetworkListener networkListener;
     private Long requestSending;
@@ -30,14 +35,22 @@ public class ProxyHttpFiltersAdapter extends HttpFiltersAdapter {
 
     /**
      * Constructor.
-     *
-     * @param originalRequest {@link HttpRequest}
+     *  @param originalRequest {@link HttpRequest}
      * @param networkListener {@link NetworkListener}
      */
-    public ProxyHttpFiltersAdapter(HttpRequest originalRequest, NetworkListener networkListener) {
+    public ProxyHttpFiltersAdapter(HttpRequest originalRequest,
+                                   NetworkListener networkListener) {
         super(originalRequest);
 
         this.networkListener = networkListener;
+    }
+
+    @Override public HttpResponse proxyToServerRequest(HttpObject httpObject) {
+        if(httpObject instanceof HttpRequest){
+            ((HttpRequest) httpObject).setUri(originalRequest.uri());
+        }
+
+        return super.proxyToServerRequest(httpObject);
     }
 
     @Override
