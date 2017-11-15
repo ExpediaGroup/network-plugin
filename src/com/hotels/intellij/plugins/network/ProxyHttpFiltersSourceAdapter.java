@@ -71,7 +71,7 @@ public class ProxyHttpFiltersSourceAdapter extends HttpFiltersSourceAdapter {
             }
         }
 
-        if (!additionalReqParams.isEmpty()) {
+        if (!additionalReqParams.isEmpty() && !uri.contains(additionalReqParams)) {
             if (uri.contains("?")) {
                 uri += "&" + additionalReqParams;
             } else if(uri.endsWith("?")){

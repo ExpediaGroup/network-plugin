@@ -19,15 +19,11 @@ import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import org.littleshoot.proxy.HttpFiltersAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Littleproxy filters adapter.
  */
 public class ProxyHttpFiltersAdapter extends HttpFiltersAdapter {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final NetworkListener networkListener;
     private Long requestSending;
@@ -38,8 +34,8 @@ public class ProxyHttpFiltersAdapter extends HttpFiltersAdapter {
      *  @param originalRequest {@link HttpRequest}
      * @param networkListener {@link NetworkListener}
      */
-    public ProxyHttpFiltersAdapter(HttpRequest originalRequest,
-                                   NetworkListener networkListener) {
+    ProxyHttpFiltersAdapter(HttpRequest originalRequest,
+                            NetworkListener networkListener) {
         super(originalRequest);
 
         this.networkListener = networkListener;
