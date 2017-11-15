@@ -20,5 +20,12 @@ package com.hotels.intellij.plugins.network;
  */
 public class Preferences {
     public static final int HTTP_PORT_DEFAULT = 8080;
+    public static final String REDIRECTED_HOST_TEMPLATE_DEFAULT = "";
+    public static final String ADDITIONAL_REQ_PARAMS_DEFAULT = "";
+
     public static final String HTTP_PORT_KEY = "com.hotels.intellij.plugins.network.http_port";
+    public static final String REDIRECT_TO_HOST_KEY = "com.hotels.intellij.plugins.network.redirect_to_host";
+    public static final String REDIRECT_TO_PORT_KEY = "com.hotels.intellij.plugins.network.redirect_to_port";
+    public static final String REDIRECTED_HOST_TEMPLATE_KEY = "com.hotels.intellij.plugins.network.redirected_host_template";
+    public static final String ADDITIONAL_REQ_PARAMS_KEY = "com.hotels.intellij.plugins.network.additional_req_params";
 }

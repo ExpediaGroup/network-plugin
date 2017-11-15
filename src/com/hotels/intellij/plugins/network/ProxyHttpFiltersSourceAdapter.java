@@ -17,22 +17,72 @@ package com.hotels.intellij.plugins.network;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpRequest;
+import org.apache.http.client.utils.URIBuilder;
 import org.littleshoot.proxy.HttpFilters;
 import org.littleshoot.proxy.HttpFiltersSourceAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.InetSocketAddress;
+import java.net.URISyntaxException;
+import javax.annotation.Nullable;
 
 /**
  * Littleproxy filters source adapter.
  */
 public class ProxyHttpFiltersSourceAdapter extends HttpFiltersSourceAdapter {
 
-    private final NetworkListener networkListener;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public ProxyHttpFiltersSourceAdapter(NetworkListener networkListener) {
+    private final NetworkListener networkListener;
+    private final String redirectedHostTemplate;
+    private final String additionalReqParams;
+    private final @Nullable InetSocketAddress redirectTo;
+
+    public ProxyHttpFiltersSourceAdapter(NetworkListener networkListener,
+                                         String redirectedHostTemplate,
+                                         String additionalReqParams,
+                                         @Nullable InetSocketAddress redirectTo) {
         this.networkListener = networkListener;
+        this.redirectedHostTemplate = redirectedHostTemplate;
+        this.additionalReqParams = additionalReqParams;
+        this.redirectTo = redirectTo;
     }
 
     @Override
     public HttpFilters filterRequest(HttpRequest originalRequest, ChannelHandlerContext ctx) {
+        String uri = originalRequest.uri();
+        ;
+        if (redirectTo != null && uri.startsWith("http")) {
+            try {
+                URIBuilder uriBuilder = new URIBuilder(uri);
+
+                String host = uriBuilder.getHost();
+
+                if (host != null && ( redirectedHostTemplate.isEmpty() || host.contains(redirectedHostTemplate))) {
+                    uriBuilder.setHost(redirectTo.getHostString());
+                    uriBuilder.setPort(redirectTo.getPort());
+
+                    uri = uriBuilder.build().toString();
+                    originalRequest.setUri(uri);
+                }
+            } catch (URISyntaxException e) {
+                logger.error("Can't construct url from string: [{}]", uri, e);
+            }
+        }
+
+        if (!additionalReqParams.isEmpty() && !uri.contains(additionalReqParams)) {
+            if (uri.contains("?")) {
+                uri += "&" + additionalReqParams;
+            } else if(uri.endsWith("?")){
+                uri += additionalReqParams;
+            } else {
+                uri += "?" + additionalReqParams;
+            }
+
+            originalRequest.setUri(uri);
+        }
+
         return new ProxyHttpFiltersAdapter(originalRequest, networkListener);
     }
 
