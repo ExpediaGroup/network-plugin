@@ -124,32 +124,24 @@ public class NetworkToolWindowPanel extends SimpleToolWindowPanel {
         table.setRowSorter(networkTableModelTableRowSorter);
 
         DefaultTableCellRenderer rightAlignedTableCellRenderer = new DefaultTableCellRenderer();
-//        rightAlignedTableCellRenderer.setPreferredSize(new Dimension(30, 0));
         rightAlignedTableCellRenderer.setHorizontalAlignment(JLabel.CENTER);
 
         TableColumnModel columnModel = table.getColumnModel();
 
         TableColumn tableColumn = columnModel.getColumn(0);
-//        tableColumn.setPreferredWidth(30);
         tableColumn.setCellRenderer(rightAlignedTableCellRenderer);
 
         TableColumn tableColumn1 = columnModel.getColumn(1);
-//        tableColumn1.setPreferredWidth(150);
         tableColumn1.setCellRenderer(rightAlignedTableCellRenderer);
 
         TableColumn tableColumn2 = columnModel.getColumn(2);
-//        tableColumn2.setPreferredWidth(45);
         tableColumn2.setCellRenderer(rightAlignedTableCellRenderer);
 
         TableColumn tableColumn3 = columnModel.getColumn(3);
-//        tableColumn3.setPreferredWidth(50);
         tableColumn3.setCellRenderer(rightAlignedTableCellRenderer);
 
         TableColumn tableColumn4 = columnModel.getColumn(4);
-//        tableColumn4.setPreferredWidth(20);
         tableColumn4.setCellRenderer(rightAlignedTableCellRenderer);
-
-//        table.doLayout();
 
         table.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
             if (table.getSelectedRow() >= 0) {
