@@ -20,7 +20,20 @@
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
+    <orderEntry type="module-library" scope="PROVIDED">
+      <library>
+        <CLASSES>
+          <root url="file://$APPLICATION_HOME_DIR$/lib" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$APPLICATION_HOME_DIR$/lib" />
+        </SOURCES>
+        <jarDirectory url="file://$APPLICATION_HOME_DIR$/lib" recursive="false" />
+        <jarDirectory url="file://$APPLICATION_HOME_DIR$/lib" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="PROVIDED">
       <library>
         <CLASSES>
           <root url="file://$MODULE_DIR$/testLib" />

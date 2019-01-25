@@ -56,10 +56,10 @@ public class NettyObjectsToRequestResponseConverter {
         FullHttpResponse fullHttpResponse = response instanceof FullHttpResponse
                 ? (FullHttpResponse) response : null;
 
-        String uri = originalRequest.uri();
-        String method = originalRequest.method().name();
+        String uri = originalRequest.getUri();
+        String method = originalRequest.getMethod().name();
         String contentType = fullHttpResponse != null ? fullHttpResponse.headers().get(HttpHeaderNames.CONTENT_TYPE) : "";
-        String responseCode = fullHttpResponse != null ? String.valueOf(fullHttpResponse.status().code()) : "";
+        String responseCode = fullHttpResponse != null ? String.valueOf(fullHttpResponse.getStatus().code()) : "";
 
         Map<String, String> requestHeaders = getHeadersAsMap(originalRequest.headers());
         String requestContent = fullHttpRequest != null ? defaultByteBufToStringConverter.convert(fullHttpRequest.content()) : "";
