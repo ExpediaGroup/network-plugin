@@ -1,2 +1,9 @@
-.idea
-out
+.idea/*
+*.iml
+*.ipr
+*.iws
+target/*
+.gradle/*
+build/*
+out/*
+*.zip
