@@ -85,6 +85,8 @@
   <!-- Please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
   <idea-version since-build="201.0"/>
 
+  <depends>com.intellij.modules.platform</depends>
+
   <extensions defaultExtensionNs="com.intellij">
     <toolWindow id="Network" anchor="bottom" icon="AllIcons.Ide.Statusbar_arrows" factoryClass="com.hotels.intellij.plugins.network.NetworkToolWindowFactory" secondary="false"/>
   </extensions>
