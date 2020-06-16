@@ -23,16 +23,16 @@
       <p>
         The Network plugin allows developers to proxy requests and view the request and responses in IntelliJ.
       </p>
-
+      <br>
       <p>
         Note: The proxy will work with HTTP traffic only. HTTPS traffic is, by nature, secure and will not display in
         the plugin.
       </p>
-
+      <br>
       <p>
         If you find any issues, please report them (please use the GitHub issue tracker instead of review comments).
       </p>
-
+      <br>
       <p>
         Features:
         <ul>
@@ -41,7 +41,7 @@
           <li>Supports JSON Content Type</li>
         </ul>
       </p>
-
+      <br>
       <p>
         This plugin uses a <a href="https://github.com/adamfisk/LittleProxy">Little Proxy</a> server.
       </p>
