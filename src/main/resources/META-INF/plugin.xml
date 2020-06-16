@@ -1,0 +1,97 @@
+<!--
+  ~ Copyright 2000-2017 JetBrains s.r.o.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<idea-plugin>
+  <id>com.hotels.intellij.plugins.network</id>
+  <name>Network</name>
+  <version>1.4</version>
+  <vendor email="jbesson@hotels.com" url="https://github.com/HotelsDotCom/network-plugin">Hotels.com</vendor>
+
+  <description><![CDATA[
+      <p>
+        The Network plugin allows developers to proxy requests and view the request and responses in IntelliJ.
+      </p>
+
+      <p>
+        Note: The proxy will work with HTTP traffic only. HTTPS traffic is, by nature, secure and will not display in
+        the plugin.
+      </p>
+
+      <p>
+        If you find any issues, please report them (please use the GitHub issue tracker instead of review comments).
+      </p>
+
+      <p>
+        Features:
+        <ul>
+          <li>Run a HTTP proxy server from InjelliJ</li>
+          <li>Supports LZ4 Content Encoding</li>
+          <li>Supports JSON Content Type</li>
+        </ul>
+      </p>
+
+      <p>
+        This plugin uses a <a href="https://github.com/adamfisk/LittleProxy">Little Proxy</a> server.
+      </p>
+    ]]>
+  </description>
+
+  <change-notes><![CDATA[
+      <p>
+        <ul>
+          <li><strong>1.4</strong></li>
+          <ul>
+            <li>Update to current IDE version</li>
+            <li>Update build to Gradle</li>
+            <li>Start proxy server as transparent</li>
+          </ul>
+
+          <li><strong>1.3</strong></li>
+          <ul>
+            <li>Use shaded version of littleproxy</li>
+          </ul>
+
+          <li><strong>1.2</strong></li>
+          <ul>
+            <li>Pretty print Json</li>
+          </ul>
+
+          <li><strong>1.1</strong></li>
+          <ul>
+            <li>Minor bigfixes</li>
+          </ul>
+
+          <li><strong>1.0</strong></li>
+          <ul>
+            <li>Initial version</li>
+          </ul>
+        </ul>
+      </p>
+    ]]>
+  </change-notes>
+
+  <!-- Please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="201.0"/>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <toolWindow id="Network" anchor="bottom" icon="AllIcons.Ide.Statusbar_arrows" factoryClass="com.hotels.intellij.plugins.network.NetworkToolWindowFactory" secondary="false"/>
+  </extensions>
+
+  <project-components>
+    <component>
+      <implementation-class>com.hotels.intellij.plugins.network.ProxyServerComponent</implementation-class>
+    </component>
+  </project-components>
+</idea-plugin>
