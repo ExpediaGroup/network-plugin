@@ -16,34 +16,34 @@
 <idea-plugin>
   <id>com.hotels.intellij.plugins.network</id>
   <name>Network</name>
-  <version>1.4</version>
+  <version>1.5</version>
   <vendor email="jbesson@hotels.com" url="https://github.com/HotelsDotCom/network-plugin">Hotels.com</vendor>
 
   <description><![CDATA[
       <p>
-        The Network plugin allows developers to proxy requests and view the request and responses in IntelliJ.
-      </p>
-      <br>
-      <p>
-        Note: The proxy will work with HTTP traffic only. HTTPS traffic is, by nature, secure and will not display in
-        the plugin.
-      </p>
-      <br>
-      <p>
-        If you find any issues, please report them (please use the GitHub issue tracker instead of review comments).
+        The Network plugin allows applications to proxy requests and view the request and responses in IntelliJ.
       </p>
       <br>
       <p>
         Features:
         <ul>
-          <li>Run a HTTP proxy server from InjelliJ</li>
+          <li>Run a HTTP proxy server from IntelliJ</li>
+          <li>View application requests sent and responses received from downstream systems<li>
+          <li>Displays Json request payloads and Json response payloads</li>
+          <li>Supports Gzip Content Encoding</li>
           <li>Supports LZ4 Content Encoding</li>
           <li>Supports JSON Content Type</li>
         </ul>
       </p>
       <br>
       <p>
-        This plugin uses a <a href="https://github.com/adamfisk/LittleProxy">Little Proxy</a> server.
+        Note: The proxy will work with HTTP traffic only. HTTPS traffic is, by nature, secure and will not display in the plugin.
+      </p>
+      <br>
+      <p>
+        If you encounter any issues, please report them. Please use the
+        <a href="https://github.com/HotelsDotCom/network-plugin/issues">GitHub issue tracker</a> instead of
+        review comments.
       </p>
     ]]>
   </description>
@@ -51,6 +51,11 @@
   <change-notes><![CDATA[
       <p>
         <ul>
+          <li><strong>1.5</strong></li>
+          <ul>
+            <li>Migrate from IntelliJ component to IntelliJ service</li>
+          </ul>
+
           <li><strong>1.4</strong></li>
           <ul>
             <li>Update to current IDE version</li>
@@ -88,12 +93,17 @@
   <depends>com.intellij.modules.platform</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-    <toolWindow id="Network" anchor="bottom" icon="AllIcons.Ide.Statusbar_arrows" factoryClass="com.hotels.intellij.plugins.network.NetworkToolWindowFactory" secondary="false"/>
+
+    <toolWindow
+            id="Network"
+            anchor="bottom"
+            icon="AllIcons.Ide.Statusbar_arrows"
+            factoryClass="com.hotels.intellij.plugins.network.NetworkToolWindowFactory"
+            secondary="false"/>
+
+    <projectService
+            serviceImplementation="com.hotels.intellij.plugins.network.ProxyServerService"/>
+
   </extensions>
 
-  <project-components>
-    <component>
-      <implementation-class>com.hotels.intellij.plugins.network.ProxyServerComponent</implementation-class>
-    </component>
-  </project-components>
 </idea-plugin>

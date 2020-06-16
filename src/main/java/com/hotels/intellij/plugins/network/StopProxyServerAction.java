@@ -33,21 +33,27 @@ public class StopProxyServerAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent event) {
-        Notifications.Bus.notify(new com.intellij.notification.Notification(Notification.NOTIFICATION_GROUP_ID,
-                                                                            Notification.NOTIFICATION_TITLE,
-                                                                            "Stopping proxy server.",
-                                                                            NotificationType.INFORMATION));
+        notifyProxyShutdown();
 
-        ProxyServerComponent proxyServerComponent = event.getProject().getComponent(ProxyServerComponent.class);
-        HttpProxyServer httpProxyServer = proxyServerComponent.getServer();
+        ProxyServerService proxyServerService = event.getProject().getService(ProxyServerService.class);
+        HttpProxyServer httpProxyServer = proxyServerService.getHttpProxyServer();
 
         httpProxyServer.stop();
-        proxyServerComponent.setServer(null);
+        proxyServerService.setHttpProxyServer(null);
     }
 
     @Override
     public void update(AnActionEvent event) {
-        ProxyServerComponent proxyServerComponent = event.getProject().getComponent(ProxyServerComponent.class);
-        event.getPresentation().setEnabled(proxyServerComponent.getServer() != null);
+        ProxyServerService proxyServerService = event.getProject().getService(ProxyServerService.class);
+        event.getPresentation().setEnabled(proxyServerService.getHttpProxyServer() != null);
+    }
+
+    private void notifyProxyShutdown() {
+        com.intellij.notification.Notification notification = new com.intellij.notification.Notification(NotificationConstants.NOTIFICATION_GROUP_ID,
+                NotificationConstants.NOTIFICATION_TITLE,
+                "Stopping proxy server.",
+                NotificationType.INFORMATION);
+
+        Notifications.Bus.notify(notification);
     }
 }

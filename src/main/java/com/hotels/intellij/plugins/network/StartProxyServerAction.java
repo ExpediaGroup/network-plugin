@@ -48,7 +48,6 @@ public class StartProxyServerAction extends AnAction {
         int httpPort = getProxyPort();
         notifyProxyStartup(httpPort);
 
-        ProxyServerComponent proxyServerComponent = event.getProject().getComponent(ProxyServerComponent.class);
         HttpProxyServer httpProxyServer = DefaultHttpProxyServer.bootstrap()
                 .withPort(httpPort)
                 .withFiltersSource(getProxyHttpFiltersSourceAdapter())
@@ -56,13 +55,14 @@ public class StartProxyServerAction extends AnAction {
                 .withTransparent(true)
                 .start();
 
-        proxyServerComponent.setServer(httpProxyServer);
+        ProxyServerService proxyServerService = event.getProject().getService(ProxyServerService.class);
+        proxyServerService.setHttpProxyServer(httpProxyServer);
     }
 
     @Override
     public void update(AnActionEvent event) {
-        ProxyServerComponent proxyServerComponent = event.getProject().getComponent(ProxyServerComponent.class);
-        event.getPresentation().setEnabled(proxyServerComponent.getServer() == null);
+        ProxyServerService proxyServerService = event.getProject().getService(ProxyServerService.class);
+        event.getPresentation().setEnabled(proxyServerService.getHttpProxyServer() == null);
     }
 
     private int getProxyPort() {
@@ -71,10 +71,12 @@ public class StartProxyServerAction extends AnAction {
     }
 
     private void notifyProxyStartup(int httpPort) {
-        Notifications.Bus.notify(new com.intellij.notification.Notification(Notification.NOTIFICATION_GROUP_ID,
-                Notification.NOTIFICATION_TITLE,
+        com.intellij.notification.Notification notification = new com.intellij.notification.Notification(NotificationConstants.NOTIFICATION_GROUP_ID,
+                NotificationConstants.NOTIFICATION_TITLE,
                 "Starting proxy server on port " + httpPort + ".",
-                NotificationType.INFORMATION));
+                NotificationType.INFORMATION);
+
+        Notifications.Bus.notify(notification);
     }
 
     private ProxyHttpFiltersSourceAdapter getProxyHttpFiltersSourceAdapter() {

@@ -18,7 +18,7 @@ package com.hotels.intellij.plugins.network;
 /**
  * Constants for notifications.
  */
-public class Notification {
+public class NotificationConstants {
     public static final String NOTIFICATION_GROUP_ID = "NetworkPlugin";
-    public static final String NOTIFICATION_TITLE = "Proxy";
+    public static final String NOTIFICATION_TITLE = "Network plugin";
 }
