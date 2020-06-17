@@ -21,7 +21,7 @@ of the selected request.
 
 The request response panel has the columns
 <ul>
-  <li>Name - The request URL</li>
+  <li>URL - The request URL</li>
   <li>Status - The response status</li>
   <li>Type - The Content-Type of the response</li>
   <li>Time - Response time in ms.</li>
