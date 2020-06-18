@@ -16,7 +16,7 @@
 <idea-plugin>
   <id>com.hotels.intellij.plugins.network</id>
   <name>Network</name>
-  <version>1.5</version>
+  <version>1.6</version>
   <vendor email="jbesson@hotels.com" url="https://github.com/HotelsDotCom/network-plugin">Hotels.com</vendor>
 
   <description><![CDATA[
@@ -51,6 +51,11 @@
   <change-notes><![CDATA[
       <p>
         <ul>
+          <li><strong>1.6</strong></li>
+          <ul>
+            <li>Update to Littleproxy 1.1.2</li>
+          </ul>
+
           <li><strong>1.5</strong></li>
           <ul>
             <li>Migrate from IntelliJ component to IntelliJ service</li>
